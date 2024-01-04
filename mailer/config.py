@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from dotenv import dotenv_values
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent
 
 config = dotenv_values(os.path.join(BASE_DIR, ".env"))
 

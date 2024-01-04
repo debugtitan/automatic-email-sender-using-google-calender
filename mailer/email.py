@@ -1,32 +1,42 @@
+import os
 import smtplib
 import ssl
 from email import charset as Charset
 from email.mime.text import MIMEText
 from email.utils import formatdate
+from jinja2 import Template
 
-from mailer.config import AppConfig
+from mailer.config import AppConfig, BASE_DIR
 
 
 class EmailClient(AppConfig):
-    """ Email Client"""
+    """Email Client"""
 
-    __slots__ = ("subject","message","recipient_list")
+    __slots__ = ("subject", "body", "to", "bcc", "extra_headers")
     content_subtype = "plain"
     mixed_subtype = "mixed"
     encoding = Charset.Charset("utf-8")
-    def __init__(self, subject: str, message: str, to=None,bcc=None):
-        
+
+    def __init__(self, subject: str, message: str, to=None, bcc=None):
         super().__init__()
         self.subject = subject
         self.body = message
         self.to = to
         self.bcc = bcc
-        self.extra_headers =  {}
+        self.extra_headers = {}
 
+    def _set_jinja(self):
+        template_path = os.path.join(BASE_DIR, 'mail.html')
+        with open(template_path, "r", encoding="utf-8") as file:
+            return file.read()
 
+    def _render_html_template(self):
+        jinja_template = Template(self._set_jinja())
+        return jinja_template.render(body=self.body)  # You can pass additional variables here
 
     def _set_message(self):
-        msg = MIMEText(self.body, self.content_subtype, self.encoding)
+        html_content = self._render_html_template()
+        msg = MIMEText(html_content, 'html', self.encoding)
         msg["Subject"] = self.subject
         msg["From"] = self.extra_headers.get("From", self.email)
         self._set_list_header_if_not_empty(msg, "To", self.to)
@@ -39,13 +49,8 @@ class EmailClient(AppConfig):
             if name.lower() != "from":  # From is already handled
                 msg[name] = value
         return msg
-    
-    
+
     def _set_list_header_if_not_empty(self, msg, header, values):
-        """
-        Set msg's header, either from self.extra_headers, if present, or from
-        the values argument.
-        """
         if values:
             try:
                 value = self.extra_headers[header]
@@ -54,7 +59,6 @@ class EmailClient(AppConfig):
             msg[header] = value
 
     def _send_mail(self):
-        """ send email """
         try:
             server = smtplib.SMTP(self.host, self.port) if self.use_tls else smtplib.SMTP_SSL(self.host, self.port)
             if self.use_tls:
@@ -68,6 +72,3 @@ class EmailClient(AppConfig):
             return
         except smtplib.SMTPException:
             return
-        
-            
-        
