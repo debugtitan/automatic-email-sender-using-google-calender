@@ -38,7 +38,7 @@ class EmailClient(AppConfig):
             subject = self.subject,
             body = self.body,
             names = self.bcc,
-            link = self.link,
+            link = "https://github.com",
             button = self.button
         )
 
