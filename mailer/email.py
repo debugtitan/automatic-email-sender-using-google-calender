@@ -4,7 +4,6 @@ import ssl
 from email import charset as Charset
 from email.mime.text import MIMEText
 from email.utils import formatdate
-from tkinter import Button
 from jinja2 import Template
 
 from mailer.config import AppConfig, BASE_DIR
