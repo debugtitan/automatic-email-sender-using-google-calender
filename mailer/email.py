@@ -1,71 +1,10 @@
 import smtplib
 import ssl
 from email import charset as Charset
-from email import generator
 from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from email.utils import formatdate
-from io import BytesIO, StringIO
 
 from mailer.config import AppConfig
-
-
-
-class MIMEMixin:
-    def as_string(self, unixfrom=False, linesep="\n"):
-        """Return the entire formatted message as a string.
-        Optional `unixfrom' when True, means include the Unix From_ envelope
-        header.
-
-        This overrides the default as_string() implementation to not mangle
-        lines that begin with 'From '. See bug #13433 for details.
-        """
-        fp = StringIO()
-        g = generator.Generator(fp, mangle_from_=False)
-        g.flatten(self, unixfrom=unixfrom, linesep=linesep)
-        return fp.getvalue()
-
-    def as_bytes(self, unixfrom=False, linesep="\n"):
-        """Return the entire formatted message as bytes.
-        Optional `unixfrom' when True, means include the Unix From_ envelope
-        header.
-
-        This overrides the default as_bytes() implementation to not mangle
-        lines that begin with 'From '. See bug #13433 for details.
-        """
-        fp = BytesIO()
-        g = generator.BytesGenerator(fp, mangle_from_=False)
-        g.flatten(self, unixfrom=unixfrom, linesep=linesep)
-        return fp.getvalue()
-
-
-
-class SafeMIMEText(MIMEMixin, MIMEText):
-    def __init__(self, _text, _subtype="plain", _charset=None):
-        self.encoding = _charset
-        MIMEText.__init__(self, _text, _subtype=_subtype, _charset=_charset)
-
-    def __setitem__(self, name, val):
-        MIMEText.__setitem__(self, name, val)
-
-    def set_payload(self, payload, charset=None):
-        if charset == "utf-8" and not isinstance(charset, Charset.Charset):
-            has_long_lines = any(
-                len(line.encode()) > 998
-                for line in payload.splitlines()
-            )
-            charset = Charset.Charset("utf-8")
-        MIMEText.set_payload(self, payload, charset=charset)
-
-class SafeMIMEMultipart(MIMEMixin, MIMEMultipart):
-    def __init__(
-        self, _subtype="mixed", boundary=None, _subparts=None, encoding=None, **_params
-    ):
-        self.encoding = encoding
-        MIMEMultipart.__init__(self, _subtype, boundary, _subparts, **_params)
-
-    def __setitem__(self, name, val):
-        MIMEMultipart.__setitem__(self, name, val)
 
 
 class EmailClient(AppConfig):
@@ -87,7 +26,7 @@ class EmailClient(AppConfig):
 
 
     def _set_message(self):
-        msg = SafeMIMEText(self.body, self.content_subtype, self.encoding)
+        msg = MIMEText(self.body, self.content_subtype, self.encoding)
         msg["Subject"] = self.subject
         msg["From"] = self.extra_headers.get("From", self.email)
         self._set_list_header_if_not_empty(msg, "To", self.to)
