@@ -4,6 +4,7 @@ import ssl
 from email import charset as Charset
 from email.mime.text import MIMEText
 from email.utils import formatdate
+from tkinter import Button
 from jinja2 import Template
 
 from mailer.config import AppConfig, BASE_DIR
@@ -17,12 +18,14 @@ class EmailClient(AppConfig):
     mixed_subtype = "mixed"
     encoding = Charset.Charset("utf-8")
 
-    def __init__(self, subject: str, message: str, to=None, bcc=None):
+    def __init__(self, subject: str, message: str, to=None, bcc=None,button_text="Follow Me",link=None):
         super().__init__()
         self.subject = subject
         self.body = message
         self.to = to
         self.bcc = bcc
+        self.button = button_text
+        self.link = link if link else "https://github.com/debugtitan"
         self.extra_headers = {}
 
     def _set_jinja(self):
@@ -32,7 +35,13 @@ class EmailClient(AppConfig):
 
     def _render_html_template(self):
         jinja_template = Template(self._set_jinja())
-        return jinja_template.render(body=self.body)  # You can pass additional variables here
+        return jinja_template.render(
+            subject = self.subject,
+            body = self.body,
+            names = self.bcc,
+            link = self.link,
+            button = self.button
+        )
 
     def _set_message(self):
         html_content = self._render_html_template()
