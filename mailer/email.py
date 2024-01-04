@@ -25,7 +25,6 @@ class EmailClient(AppConfig):
         self.to = to
         self.bcc = bcc
         self.button = button_text
-        self.link = link if link else "https://github.com/debugtitan"
         self.extra_headers = {}
 
     def _set_jinja(self):
