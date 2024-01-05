@@ -8,6 +8,7 @@ class GoogleCalenderClient:
     """ Google Calender Client """
 
     @staticmethod
-    def get_calender_events(self):
-        
+    def get_calender_list():
+        service.calendarList().list(pageToken=None).execute()
+
         
