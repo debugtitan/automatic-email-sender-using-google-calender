@@ -12,6 +12,7 @@ class AppConfig:
     port = config["PORT"]
     use_ssl = config['USE_SSL']
     use_tls = config["USE_TLS"]
+    google_api_key = config["GOOGLE_KEY"]
 
 
 
