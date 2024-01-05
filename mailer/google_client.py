@@ -9,6 +9,6 @@ class GoogleCalenderClient:
 
     @staticmethod
     def get_calender_list():
-        service.calendarList().list(pageToken=None).execute()
+        return service.calendarList().list(pageToken=None).execute()
 
         
