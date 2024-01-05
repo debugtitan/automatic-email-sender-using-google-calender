@@ -1,2 +1,2 @@
-from mailer.email import EmailClient
+from mailer.email_client import EmailClient
 
