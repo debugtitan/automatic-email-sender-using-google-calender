@@ -12,7 +12,7 @@ from mailer.config import AppConfig, BASE_DIR
 class EmailClient(AppConfig):
     """Email Client"""
 
-    __slots__ = ("subject", "body", "to", "bcc", "extra_headers")
+    __slots__ = ("subject", "message", "to", "bcc","button_text","link")
     content_subtype = "plain"
     mixed_subtype = "mixed"
     encoding = Charset.Charset("utf-8")
@@ -67,6 +67,7 @@ class EmailClient(AppConfig):
             msg[header] = value
 
     def _send_mail(self):
+        
         try:
             server = smtplib.SMTP(self.host, self.port) if self.use_tls else smtplib.SMTP_SSL(self.host, self.port)
             if self.use_tls:
@@ -77,6 +78,6 @@ class EmailClient(AppConfig):
             server.send_message(self._set_message())
             server.close()
         except smtplib.SMTPServerDisconnected:
-            return
+            raise
         except smtplib.SMTPException:
-            return
+            raise

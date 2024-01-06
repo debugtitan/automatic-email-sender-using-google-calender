@@ -63,14 +63,15 @@ class GoogleCalendarClient:
             attendee_emails = [
                 attendee["email"] for attendee in attendees if "email" in attendee
             ]
-
-            EmailClient(
+            print("Here ooo")
+            helper = EmailClient(
                 subject=subject,
                 message=summary,
                 to=organizer_email,
                 bcc=attendee_emails,  #
                 button_text="View Event",
                 link=event_link,
-            )._send_mail()
+            )
+            helper._send_mail()
 
         return events
