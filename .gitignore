@@ -153,6 +153,7 @@ dmypy.json
 cython_debug/
 test.py
 secrets.json
+token.pickle
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
