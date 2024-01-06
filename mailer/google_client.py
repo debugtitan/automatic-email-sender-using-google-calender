@@ -63,7 +63,6 @@ class GoogleCalendarClient:
             attendee_emails = [
                 attendee["email"] for attendee in attendees if "email" in attendee
             ]
-            print("Here ooo")
             helper = EmailClient(
                 subject=subject,
                 message=summary,
